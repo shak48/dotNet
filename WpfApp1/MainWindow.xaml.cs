@@ -3,7 +3,8 @@ using System.IO;
 using System.IO.Ports;
 using System.Text;
 using System.Windows;
-using System.Windows.Controls;
+
+
 
 namespace SerialPortWpf
 {
@@ -23,6 +24,8 @@ namespace SerialPortWpf
             {
                 ComPortComboBox.Items.Add(port);
             }
+            // Initialize the OxyPlot plot model
+
         }
 
         private void OpenCloseButton_Click(object sender, RoutedEventArgs e)
@@ -77,12 +80,25 @@ namespace SerialPortWpf
             String messageWithcomma = $"{timestamp} , {receivedData}";
             logBuilder.AppendLine(messageWithcomma);
 
+            if (receivedData.Length > 1)
+            {
+                receivedData = receivedData.Substring(0);
+            }
+            else
+            {
+                // Handle cases where the received data is shorter than 5 characters
+                // You can decide what to do in such cases, e.g., skip the data or display an error message.
+                // For now, we'll just skip the data.
+                return;
+            }
+
             // Update the message window with the received data
             Dispatcher.Invoke(() =>
             {
                 MessageTextBox.AppendText(messageWithTimestamp);//+ Environment.NewLine);
                 MessageTextBox.ScrollToEnd(); // Scroll to the end to show the latest message
             });
+
         }
         private void SaveToFileButton_Click(object sender, RoutedEventArgs e)
         {
