@@ -159,13 +159,13 @@ namespace SerialPortWpf
             if (serialPort != null && serialPort.IsOpen)
             {
                 // Get the text from the TextBox
-                string textToSend = InputTextBox.Text;
+                string textToSend = InputTextBox.Text.Trim();
 
                 // Send the text to the serial port
                 serialPort.WriteLine(textToSend);
 
                 // Optionally, display the sent text in the message window
-                MessageTextBox.AppendText(textToSend + Environment.NewLine);
+                MessageTextBox.AppendText("Sent>> "+textToSend + Environment.NewLine);
                 MessageTextBox.ScrollToEnd(); // Scroll to the end to show the latest message
 
                 // Clear the TextBox for user input
