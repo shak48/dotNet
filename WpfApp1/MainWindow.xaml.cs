@@ -153,6 +153,31 @@ namespace SerialPortWpf
                 MessageBox.Show("Error saving log: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+        private void SendButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Check if the serial port is open
+            if (serialPort != null && serialPort.IsOpen)
+            {
+                // Get the text from the TextBox
+                string textToSend = InputTextBox.Text;
+
+                // Send the text to the serial port
+                serialPort.WriteLine(textToSend);
+
+                // Optionally, display the sent text in the message window
+                MessageTextBox.AppendText(textToSend + Environment.NewLine);
+                MessageTextBox.ScrollToEnd(); // Scroll to the end to show the latest message
+
+                // Clear the TextBox for user input
+                InputTextBox.Clear();
+
+            }
+            else
+            {
+                MessageBox.Show("Serial port is not open. Please open the serial port first.");
+            }
+        }
+
 
 
         private void RefreshPortsButton_Click(object sender, RoutedEventArgs e)

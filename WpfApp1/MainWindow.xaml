@@ -4,13 +4,15 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:oxy="http://oxyplot.org/wpf"
-        xmlns:local="clr-namespace:SerialPortWpf"
+        xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
         Title="SerialPortTester" Height="800" Width="500">
+
     <Grid>
         <Button Name="OpenCloseButton" Content="Open Serial Port" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Click="OpenCloseButton_Click"/>
         <Button Name="RefreshPortsButton" Content="RefreshPortsButton" HorizontalAlignment="Left" Margin="0,25,0,0" VerticalAlignment="Top" Click="RefreshPortsButton_Click"/>
-        <Button x:Name="SaveToFileButton" Content="Save to File" HorizontalAlignment="Left" Margin="100,0,0,0" VerticalAlignment="Top" Click="SaveToFileButton_Click"/>
+        <Button Name="SaveToFileButton" Content="Save to File" HorizontalAlignment="Left" Margin="100,0,0,0" VerticalAlignment="Top" Click="SaveToFileButton_Click"/>
+        <Button Content="Send" HorizontalAlignment="Left" VerticalAlignment="Top" Width="74" Height="20" Margin="244,52,0,0" Click="SendButton_Click" RenderTransformOrigin="-0.44,0.631" />
 
         <ComboBox Name="ComPortComboBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="99" Margin="120,25,0,0">
             <ComboBoxItem IsEnabled="False">Select COM Port</ComboBoxItem>
@@ -19,9 +21,13 @@
             <ComboBoxItem IsEnabled="False">Select Baud Rate</ComboBoxItem>
             <!-- Add more baud rates as needed -->
         </ComboBox>
-        <TextBox Name="MessageTextBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,50,10,10" TextWrapping="Wrap" AcceptsReturn="True" IsReadOnly="True" VerticalScrollBarVisibility="Auto"/>
-	</Grid>
-	
+        <TextBox Name="MessageTextBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,80,10,10" TextWrapping="Wrap" AcceptsReturn="True" IsReadOnly="True" VerticalScrollBarVisibility="Auto"/>
+        <TextBox Name="InputTextBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Margin="19,51,0,0" />
+
+    </Grid>
+
+
+
 
 </Window>
 
