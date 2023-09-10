@@ -19,27 +19,29 @@ namespace SerialPortWpf
             }
         }
 
-        private void OpenButton_Click(object sender, RoutedEventArgs e)
+        private void OpenCloseButton_Click(object sender, RoutedEventArgs e)
         {
-            if (serialPort == null)
+            if (!isPortOpen)
             {
-                serialPort = new SerialPort();
+                // Check if a COM port is selected in the ComboBox
+                if (ComPortComboBox.SelectedItem == null)
+                {
+                    MessageBox.Show("Please select a COM port.");
+                    return;
+                }
 
-                // Configure serial port settings
-                serialPort.PortName = "COM14"; // Change to your desired port
-                serialPort.BaudRate = 9600;   // Change to your desired baud rate
-                serialPort.DataBits = 8;
-                serialPort.Parity = Parity.None;
-                serialPort.StopBits = StopBits.One;
+                // Initialize and configure the serial port using the selected COM port
+                serialPort = new SerialPort(ComPortComboBox.SelectedItem.ToString(), 9600, Parity.None, 8, StopBits.One);
 
                 try
                 {
                     // Open the serial port
                     serialPort.Open();
                     isPortOpen = true;
-                    OpenButton.Content = "Close Serial Port";
-                    serialPort.DataReceived += SerialPort_DataReceived;
+                    OpenCloseButton.Content = "Close Serial Port";
 
+                    // Attach an event handler for data received
+                    serialPort.DataReceived += SerialPort_DataReceived;
                 }
                 catch (Exception ex)
                 {
@@ -50,9 +52,8 @@ namespace SerialPortWpf
             {
                 // Close the serial port
                 serialPort.Close();
-                isPortOpen= false;
-                OpenButton.Content = "Open Serial Port";
-                serialPort = null;
+                isPortOpen = false;
+                OpenCloseButton.Content = "Open Serial Port";
             }
         }
         private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
@@ -60,10 +61,16 @@ namespace SerialPortWpf
             // Read data from the serial port
             string receivedData = serialPort.ReadLine();
 
+            // Create a timestamp with the current time
+            string timestamp = DateTime.Now.ToString("yyyyMMdd-HHmmss");
+
+            // Combine the timestamp and received data
+            string messageWithTimestamp = $"{timestamp} - {receivedData}";
+
             // Update the message window with the received data
             Dispatcher.Invoke(() =>
             {
-                MessageTextBox.AppendText(receivedData + Environment.NewLine);
+                MessageTextBox.AppendText(messageWithTimestamp);//+ Environment.NewLine);
                 MessageTextBox.ScrollToEnd(); // Scroll to the end to show the latest message
             });
         }
