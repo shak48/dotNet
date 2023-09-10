@@ -13,6 +13,7 @@ namespace SerialPortWpf
         private bool isPortOpen = false;
         private StringBuilder logBuilder = new StringBuilder();
 
+
         public MainWindow()
         {
             InitializeComponent();
@@ -72,8 +73,9 @@ namespace SerialPortWpf
             // Combine the timestamp and received data
             string messageWithTimestamp = $"{timestamp} - {receivedData}";
 
-            logBuilder.AppendLine(messageWithTimestamp);
-
+            // Combine the timestamp and received data and comma for .csv file
+            String messageWithcomma = $"{timestamp} , {receivedData}";
+            logBuilder.AppendLine(messageWithcomma);
 
             // Update the message window with the received data
             Dispatcher.Invoke(() =>
@@ -100,6 +102,10 @@ namespace SerialPortWpf
                     }
                     string fileName = $"SerialLog_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.csv";
                     string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "logs", "SerialPortWpf", fileName);
+
+                    // Add the first line with time and voltage
+                    string firstLine = $"Time,Voltage";
+                    logText = firstLine + Environment.NewLine + logText;
 
                     File.WriteAllText(filePath, logText);
 
