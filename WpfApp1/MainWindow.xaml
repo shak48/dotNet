@@ -17,15 +17,6 @@
         </ComboBox>
         <ComboBox Name="BaudRateComboBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="62" Margin="239,25,0,0" RenderTransformOrigin="1.505,0.609">
             <ComboBoxItem IsEnabled="False">Select Baud Rate</ComboBoxItem>
-            <ComboBoxItem IsSelected="True">9600</ComboBoxItem>
-            <ComboBoxItem>11400</ComboBoxItem>
-            <ComboBoxItem>19200</ComboBoxItem>
-            <ComboBoxItem>38400</ComboBoxItem>
-            <ComboBoxItem>57600</ComboBoxItem>
-            <ComboBoxItem>115200</ComboBoxItem>
-            <ComboBoxItem>230400</ComboBoxItem>
-            <ComboBoxItem>460800</ComboBoxItem>
-            <ComboBoxItem>921600</ComboBoxItem>
             <!-- Add more baud rates as needed -->
         </ComboBox>
         <TextBox Name="MessageTextBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,50,10,10" TextWrapping="Wrap" AcceptsReturn="True" IsReadOnly="True" VerticalScrollBarVisibility="Auto"/>

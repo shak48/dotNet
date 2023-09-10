@@ -24,7 +24,12 @@ namespace SerialPortWpf
             {
                 ComPortComboBox.Items.Add(port);
             }
-            // Initialize the OxyPlot plot model
+            // Add baud rate items dynamically to the ComboBox
+            int[] baudRates = { 9600, 11400, 19200, 38400, 57600, 115200, 230400, 460800, 921600 };
+            foreach (int baudRate in baudRates)
+            {
+                BaudRateComboBox.Items.Add(baudRate.ToString());
+            }
 
         }
 
@@ -39,22 +44,31 @@ namespace SerialPortWpf
                     return;
                 }
 
-                // Initialize and configure the serial port using the selected COM port
-                serialPort = new SerialPort(ComPortComboBox.SelectedItem.ToString(), 9600, Parity.None, 8, StopBits.One);
-
-                try
+                // Attempt to convert the selected baud rate to an integer
+                if (int.TryParse(BaudRateComboBox.SelectedItem.ToString(), out int selectedBaudRate))
                 {
-                    // Open the serial port
-                    serialPort.Open();
-                    isPortOpen = true;
-                    OpenCloseButton.Content = "Close Serial Port";
+                    // Initialize and configure the serial port using the selected COM port and baud rate
+                    serialPort = new SerialPort(ComPortComboBox.SelectedItem.ToString(), selectedBaudRate, Parity.None, 8, StopBits.One);
 
-                    // Attach an event handler for data received
-                    serialPort.DataReceived += SerialPort_DataReceived;
+                    try
+                    {
+                        // Open the serial port
+                        serialPort.Open();
+                        isPortOpen = true;
+                        OpenCloseButton.Content = "Close Serial Port";
+
+                        // Attach an event handler for data received
+                        serialPort.DataReceived += SerialPort_DataReceived;
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error opening serial port: " + ex.Message);
+                    }
                 }
-                catch (Exception ex)
+                else
                 {
-                    MessageBox.Show("Error opening serial port: " + ex.Message);
+                    MessageBox.Show("Please select a valid baud rate.");
+                    Console.WriteLine(BaudRateComboBox.SelectedItem);
                 }
             }
             else
@@ -65,6 +79,7 @@ namespace SerialPortWpf
                 OpenCloseButton.Content = "Open Serial Port";
             }
         }
+
         private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             // Read data from the serial port
