@@ -5,12 +5,26 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="SerialPortTester" Height="500" Width="300">
+        Title="SerialPortTester" Height="800" Width="500">
     <Grid>
         <Button Name="OpenCloseButton" Content="Open Serial Port" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Click="OpenCloseButton_Click"/>
         <Button Name="RefreshPortsButton" Content="RefreshPortsButton" HorizontalAlignment="Left" Margin="0,25,0,0" VerticalAlignment="Top" Click="RefreshPortsButton_Click"/>
-        <ComboBox Name="ComPortComboBox" HorizontalAlignment="Right" VerticalAlignment="Top" Width="100" Margin="100,25,0,0"/>
-        <ComboBox Name="BaudComboBox" HorizontalAlignment="Right" VerticalAlignment="Top" Width="100" Margin="200,25,0,0"/>
+        <ComboBox Name="ComPortComboBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="99" Margin="120,25,0,0">
+            <ComboBoxItem IsEnabled="False">Select COM Port</ComboBoxItem>
+        </ComboBox>
+        <ComboBox Name="BaudRateComboBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="62" Margin="239,25,0,0" RenderTransformOrigin="1.505,0.609">
+            <ComboBoxItem IsEnabled="False">Select Baud Rate</ComboBoxItem>
+            <ComboBoxItem IsSelected="True">9600</ComboBoxItem>
+            <ComboBoxItem>11400</ComboBoxItem>
+            <ComboBoxItem>19200</ComboBoxItem>
+            <ComboBoxItem>38400</ComboBoxItem>
+            <ComboBoxItem>57600</ComboBoxItem>
+            <ComboBoxItem>115200</ComboBoxItem>
+            <ComboBoxItem>230400</ComboBoxItem>
+            <ComboBoxItem>460800</ComboBoxItem>
+            <ComboBoxItem>921600</ComboBoxItem>
+            <!-- Add more baud rates as needed -->
+        </ComboBox>
         <TextBox Name="MessageTextBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,50,10,10" TextWrapping="Wrap" AcceptsReturn="True" IsReadOnly="True" VerticalScrollBarVisibility="Auto"/>
     </Grid>
 </Window>
