@@ -8,8 +8,9 @@
         Title="SerialPortTester" Height="500" Width="300">
     <Grid>
         <Button Name="OpenCloseButton" Content="Open Serial Port" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Click="OpenCloseButton_Click"/>
-        <Button Name="RefreshPortsButton" Content="RefreshPortsButton" HorizontalAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Top" Click="RefreshPortsButton_Click"/>
-        <ComboBox Name="ComPortComboBox" HorizontalAlignment="Right" VerticalAlignment="Top" Width="100" Margin="0,0,0,0"/>
+        <Button Name="RefreshPortsButton" Content="RefreshPortsButton" HorizontalAlignment="Left" Margin="0,25,0,0" VerticalAlignment="Top" Click="RefreshPortsButton_Click"/>
+        <ComboBox Name="ComPortComboBox" HorizontalAlignment="Right" VerticalAlignment="Top" Width="100" Margin="100,25,0,0"/>
+        <ComboBox Name="BaudComboBox" HorizontalAlignment="Right" VerticalAlignment="Top" Width="100" Margin="200,25,0,0"/>
         <TextBox Name="MessageTextBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,50,10,10" TextWrapping="Wrap" AcceptsReturn="True" IsReadOnly="True" VerticalScrollBarVisibility="Auto"/>
     </Grid>
 </Window>
