@@ -9,6 +9,8 @@
     <Grid>
         <Button Name="OpenCloseButton" Content="Open Serial Port" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Click="OpenCloseButton_Click"/>
         <Button Name="RefreshPortsButton" Content="RefreshPortsButton" HorizontalAlignment="Left" Margin="0,25,0,0" VerticalAlignment="Top" Click="RefreshPortsButton_Click"/>
+        <Button x:Name="SaveToFileButton" Content="Save to File" HorizontalAlignment="Left" Margin="100,0,0,0" VerticalAlignment="Top" Click="SaveToFileButton_Click"/>
+
         <ComboBox Name="ComPortComboBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="99" Margin="120,25,0,0">
             <ComboBoxItem IsEnabled="False">Select COM Port</ComboBoxItem>
         </ComboBox>

@@ -1,6 +1,9 @@
-﻿using System.IO.Ports;
+﻿using System;
+using System.IO;
+using System.IO.Ports;
+using System.Text;
 using System.Windows;
-using System;
+using System.Windows.Controls;
 
 namespace SerialPortWpf
 {
@@ -8,6 +11,8 @@ namespace SerialPortWpf
     {
         private SerialPort serialPort;
         private bool isPortOpen = false;
+        private StringBuilder logBuilder = new StringBuilder();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -67,6 +72,9 @@ namespace SerialPortWpf
             // Combine the timestamp and received data
             string messageWithTimestamp = $"{timestamp} - {receivedData}";
 
+            logBuilder.AppendLine(messageWithTimestamp);
+
+
             // Update the message window with the received data
             Dispatcher.Invoke(() =>
             {
@@ -74,6 +82,41 @@ namespace SerialPortWpf
                 MessageTextBox.ScrollToEnd(); // Scroll to the end to show the latest message
             });
         }
+        private void SaveToFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string logText = logBuilder.ToString();
+
+                if (!string.IsNullOrEmpty(logText))
+                {
+                    // Specify the directory path
+                    string directoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "logs", "SerialPortWpf");
+
+                    // Ensure the directory exists, create it if not
+                    if (!Directory.Exists(directoryPath))
+                    {
+                        Directory.CreateDirectory(directoryPath);
+                    }
+                    string fileName = $"SerialLog_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.csv";
+                    string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "logs", "SerialPortWpf", fileName);
+
+                    File.WriteAllText(filePath, logText);
+
+
+                    MessageBox.Show($"Log saved to {filePath}", "Log Saved", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    MessageBox.Show("No data to save.", "Empty Log", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error saving log: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
 
         private void RefreshPortsButton_Click(object sender, RoutedEventArgs e)
         {
@@ -97,5 +140,6 @@ namespace SerialPortWpf
                 isPortOpen= false;
             }
         }
+
     }
 }
