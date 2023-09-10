@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:oxy="http://oxyplot.org/wpf"
-        xmlns:local="clr-namespace:WpfApp1"
+        xmlns:local="clr-namespace:SerialPortWpf"
         mc:Ignorable="d"
         Title="SerialPortTester" Height="800" Width="500">
     <Grid>

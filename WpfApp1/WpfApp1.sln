@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApp1", "WpfApp1.csproj", "{33D97075-178A-4EA6-8091-7228E0E201F0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SerialPortWpf", "SerialPortWpf.csproj", "{33D97075-178A-4EA6-8091-7228E0E201F0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
