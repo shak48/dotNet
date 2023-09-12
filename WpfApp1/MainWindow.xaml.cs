@@ -4,6 +4,8 @@ using System.IO.Ports;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Configuration;
+
 
 
 
@@ -19,40 +21,40 @@ namespace SerialPortWpf
         private Regex commaRegex = new Regex(@"[^,\r\n]*,[^,\r\n]*");
         private int matchedLineCount = 0;
 
-
         public MainWindow()
         {
             InitializeComponent();
 
-            // Create an instance of XmlConfig
-            XmlConfig config = new XmlConfig();
-
-            // Set the FilePath property to the path of the configuration file
-            config.FilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.xml");
-
-            // Load configuration
-            config = XmlConfig.LoadConfig(config.FilePath);
-            if (config != null)
+            try
             {
-                // Populate the COM port ComboBox with available ports
-                string[] availablePorts = SerialPort.GetPortNames();
-                foreach (string port in availablePorts)
+                // Read the baud rate setting from app.config
+                string baudRateString = System.Configuration.ConfigurationManager.AppSettings["BaudRate"];
+                if (int.TryParse(baudRateString, out int baudRate))
                 {
-                    ComPortComboBox.Items.Add(port);
+                    // Populate the COM port ComboBox with available ports
+                    string[] availablePorts = SerialPort.GetPortNames();
+                    foreach (string port in availablePorts)
+                    {
+                        ComPortComboBox.Items.Add(port);
+                    }
+
+                    // Add baud rate items dynamically to the ComboBox
+                    BaudRateComboBox.Items.Add(baudRate.ToString());
+                    BaudRateComboBox.SelectedItem = baudRate.ToString();
                 }
-
-                // Add baud rate items dynamically to the ComboBox
-                BaudRateComboBox.Items.Add(config.BaudRate.ToString());
-                BaudRateComboBox.SelectedItem = config.BaudRate.ToString();
+                else
+                {
+                    // Handle the case when the baud rate setting is not a valid integer
+                    MessageBox.Show("Invalid baud rate configuration in app.config.");
+                }
             }
-            else
+            catch (ConfigurationErrorsException ex)
             {
-                // Handle the case when configuration loading fails
-                MessageBox.Show("Failed to load configuration. Please check the configuration file.");
+                // Handle configuration errors
+                MessageBox.Show($"Error reading configuration: {ex.Message}");
             }
-        
+        }
 
-    }
 
         private void OpenCloseButton_Click(object sender, RoutedEventArgs e)
         {
@@ -224,27 +226,6 @@ namespace SerialPortWpf
             }
         }
 
-        public class AppConfig
-        {
-            public int BaudRate { get; set; }
-            public string FilePath { get; set; } // Add the FilePath property
-
-
-            public static AppConfig LoadConfig(string filePath)
-            {
-                try
-                {
-                    string json = File.ReadAllText(filePath);
-                    return JsonConvert.DeserializeObject<AppConfig>(json);
-                }
-                catch (Exception ex)
-                {
-                    // Handle any configuration loading errors here
-                    Console.WriteLine($"Error loading configuration: {ex.Message}");
-                    return null;
-                }
-            }
-        }
 
     }
 }
