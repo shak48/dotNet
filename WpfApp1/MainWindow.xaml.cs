@@ -2,6 +2,7 @@
 using System.IO;
 using System.IO.Ports;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
 
 
@@ -11,27 +12,47 @@ namespace SerialPortWpf
     public partial class MainWindow : Window
     {
         private SerialPort serialPort;
+        public int BaudRate { get; set; }
         private bool isPortOpen = false;
         private StringBuilder logBuilder = new StringBuilder();
+        private StringBuilder dataBuffer = new StringBuilder();
+        private Regex commaRegex = new Regex(@"[^,\r\n]*,[^,\r\n]*");
+        private int matchedLineCount = 0;
 
 
         public MainWindow()
         {
             InitializeComponent();
-            // Populate the COM port ComboBox with available ports
-            string[] availablePorts = SerialPort.GetPortNames();
-            foreach (string port in availablePorts)
-            {
-                ComPortComboBox.Items.Add(port);
-            }
-            // Add baud rate items dynamically to the ComboBox
-            int[] baudRates = { 9600, 11400, 19200, 38400, 57600, 115200, 230400, 460800, 921600 };
-            foreach (int baudRate in baudRates)
-            {
-                BaudRateComboBox.Items.Add(baudRate.ToString());
-            }
 
-        }
+            // Create an instance of XmlConfig
+            XmlConfig config = new XmlConfig();
+
+            // Set the FilePath property to the path of the configuration file
+            config.FilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.xml");
+
+            // Load configuration
+            config = XmlConfig.LoadConfig(config.FilePath);
+            if (config != null)
+            {
+                // Populate the COM port ComboBox with available ports
+                string[] availablePorts = SerialPort.GetPortNames();
+                foreach (string port in availablePorts)
+                {
+                    ComPortComboBox.Items.Add(port);
+                }
+
+                // Add baud rate items dynamically to the ComboBox
+                BaudRateComboBox.Items.Add(config.BaudRate.ToString());
+                BaudRateComboBox.SelectedItem = config.BaudRate.ToString();
+            }
+            else
+            {
+                // Handle the case when configuration loading fails
+                MessageBox.Show("Failed to load configuration. Please check the configuration file.");
+            }
+        
+
+    }
 
         private void OpenCloseButton_Click(object sender, RoutedEventArgs e)
         {
@@ -82,37 +103,36 @@ namespace SerialPortWpf
 
         private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            // Read data from the serial port
-            string receivedData = serialPort.ReadLine();
-
-            // Create a timestamp with the current time
-            string timestamp = DateTime.Now.ToString("yyyyMMdd-HHmmss");
-
-            // Combine the timestamp and received data
-            string messageWithTimestamp = $"{timestamp} - {receivedData}";
-
-            // Combine the timestamp and received data and comma for .csv file
-            String messageWithcomma = $"{timestamp} , {receivedData}";
-            logBuilder.AppendLine(messageWithcomma);
-
-            if (receivedData.Length > 1)
+            try
             {
-                receivedData = receivedData.Substring(0);
+                string data = serialPort.ReadExisting();
+                // Split the data into lines
+
+                string[] lines = data.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+
+        // Iterate through the lines and append lines with a comma
+        foreach (string line in lines)
+        {
+            if (matchedLineCount < 100 && commaRegex.IsMatch(line)) // Change "10" to the desired line count
+            {
+                dataBuffer.AppendLine(line);
+                logBuilder.AppendLine(line);
+                matchedLineCount++;
             }
-            else
-            {
-                // Handle cases where the received data is shorter than 5 characters
-                // You can decide what to do in such cases, e.g., skip the data or display an error message.
-                // For now, we'll just skip the data.
-                return;
-            }
+        }
 
-            // Update the message window with the received data
-            Dispatcher.Invoke(() =>
+                // Update the TextBox on the UI thread
+                Dispatcher.Invoke(() =>
+                {
+                    MessageTextBox.AppendText(data);
+                });
+                dataBuffer.Clear();
+
+            }
+            catch (Exception ex)
             {
-                MessageTextBox.AppendText(messageWithTimestamp);//+ Environment.NewLine);
-                MessageTextBox.ScrollToEnd(); // Scroll to the end to show the latest message
-            });
+                MessageBox.Show($"Error: {ex.Message}");
+            }
 
         }
         private void SaveToFileButton_Click(object sender, RoutedEventArgs e)
@@ -135,8 +155,7 @@ namespace SerialPortWpf
                     string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "logs", "SerialPortWpf", fileName);
 
                     // Add the first line with time and voltage
-                    string firstLine = $"Time,Voltage";
-                    logText = firstLine + Environment.NewLine + logText;
+                    logText = Environment.NewLine + logText;
 
                     File.WriteAllText(filePath, logText);
 
@@ -191,6 +210,8 @@ namespace SerialPortWpf
                 ComPortComboBox.Items.Add(port);
             }
         }
+
+
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
@@ -200,6 +221,28 @@ namespace SerialPortWpf
             {
                 serialPort.Close();
                 isPortOpen= false;
+            }
+        }
+
+        public class AppConfig
+        {
+            public int BaudRate { get; set; }
+            public string FilePath { get; set; } // Add the FilePath property
+
+
+            public static AppConfig LoadConfig(string filePath)
+            {
+                try
+                {
+                    string json = File.ReadAllText(filePath);
+                    return JsonConvert.DeserializeObject<AppConfig>(json);
+                }
+                catch (Exception ex)
+                {
+                    // Handle any configuration loading errors here
+                    Console.WriteLine($"Error loading configuration: {ex.Message}");
+                    return null;
+                }
             }
         }
 
