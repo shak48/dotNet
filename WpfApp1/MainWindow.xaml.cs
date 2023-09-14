@@ -28,7 +28,7 @@ namespace SerialPortWpf
             try
             {
                 // Read the baud rate setting from app.config
-                string baudRateString = System.Configuration.ConfigurationManager.AppSettings["BaudRate"];
+                string baudRateString = ConfigurationManager.AppSettings["BaudRate"];
                 if (int.TryParse(baudRateString, out int baudRate))
                 {
                     // Populate the COM port ComboBox with available ports
