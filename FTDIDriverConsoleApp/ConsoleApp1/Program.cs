@@ -21,7 +21,7 @@ class Program
         try
         {
             // Configure GPIOL0 (bit 4), GPIOL1 (bit 5), GPIOL2 (bit 6), and GPIOL3 (bit 7) for input mode
-            status = ftdi.SetBitMode(bitModeByte, FTDI.FT_BIT_MODES.FT_BIT_MODE_ASYNC_BITBANG);
+            status = ftdi.SetBitMode(bitModeByte, FTDI.FT_BIT_MODES.FT_BIT_MODE_SYNC_BITBANG);//need to make this change.
             if (status != FTDI.FT_STATUS.FT_OK)
             {
                 Console.WriteLine("Failed to set bit mode: " + status.ToString());
