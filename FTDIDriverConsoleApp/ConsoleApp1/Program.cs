@@ -15,20 +15,13 @@ class Program
             return;
         }
 
-        byte bitModeByte = 0; // Initialize the bit mode byte
-        byte data = 0; // Initialize the data byte
-        bool toggleStateGPIOL0 = false; // Initialize the toggle state for GPIOL0 (bit 4)
-        bool toggleStateGPIOL1 = false; // Initialize the toggle state for GPIOL1 (bit 5)
-        bool toggleStateGPIOL2 = false; // Initialize the toggle state for GPIOL2 (bit 6)
-        bool toggleStateGPIOL3 = false; // Initialize the toggle state for GPIOL3 (bit 7)
+        byte bitModeByte = 0b11110000; // Set bit 4 (GPIOL0), bit 5 (GPIOL1), bit 6 (GPIOL2), and bit 7 (GPIOL3) as inputs
+        byte[] readData = new byte[1]; // Initialize the read data buffer with a length of 1
 
         try
         {
-            // Set bit 4 (GPIOL0), bit 5 (GPIOL1), bit 6 (GPIOL2), and bit 7 (GPIOL3) as outputs
-            bitModeByte |= 0b11110000; // Binary representation for bits 4, 5, 6, and 7
-
-            // Configure GPIOL0 (bit 4), GPIOL1 (bit 5), GPIOL2 (bit 6), and GPIOL3 (bit 7) for output mode
-            status = ftdi.SetBitMode(bitModeByte, FTDI.FT_BIT_MODES.FT_BIT_MODE_SYNC_BITBANG);
+            // Configure GPIOL0 (bit 4), GPIOL1 (bit 5), GPIOL2 (bit 6), and GPIOL3 (bit 7) for input mode
+            status = ftdi.SetBitMode(bitModeByte, FTDI.FT_BIT_MODES.FT_BIT_MODE_ASYNC_BITBANG);
             if (status != FTDI.FT_STATUS.FT_OK)
             {
                 Console.WriteLine("Failed to set bit mode: " + status.ToString());
@@ -37,40 +30,28 @@ class Program
 
             while (ftdi.IsOpen)
             {
-                // Toggle the state of GPIOL0 (bit 4)
-                toggleStateGPIOL0 = !toggleStateGPIOL0;
-
-                // Toggle the state of GPIOL1 (bit 5)
-                toggleStateGPIOL1 = !toggleStateGPIOL1;
-
-                // Toggle the state of GPIOL2 (bit 6)
-                toggleStateGPIOL2 = !toggleStateGPIOL2;
-
-                // Toggle the state of GPIOL3 (bit 7)
-                toggleStateGPIOL3 = !toggleStateGPIOL3;
-
-                // Update the data byte based on the toggle states
-                data = (byte)((toggleStateGPIOL3 ? 0b10000000 : 0b00000000) |
-                               (toggleStateGPIOL2 ? 0b01000000 : 0b00000000) |
-                               (toggleStateGPIOL1 ? 0b00100000 : 0b00000000) |
-                               (toggleStateGPIOL0 ? 0b00010000 : 0b00000000));
-
-                // Write the current data byte to GPIOL0 (bit 4), GPIOL1 (bit 5), GPIOL2 (bit 6), and GPIOL3 (bit 7)
-                uint bytesWritten = 0;
-                status = ftdi.Write(new byte[] { data }, 1, ref bytesWritten);
+                // Read a byte of data into the buffer
+                uint bytesRead = 0;
+                status = ftdi.Read(readData, 1, ref bytesRead);
 
                 if (status != FTDI.FT_STATUS.FT_OK)
                 {
-                    Console.WriteLine("Failed to write data: " + status.ToString());
+                    Console.WriteLine("Failed to read data: " + status.ToString());
                     break;
                 }
 
-                Console.WriteLine("GPIOL0 (Bit 4) state toggled: " + toggleStateGPIOL0);
-                Console.WriteLine("GPIOL1 (Bit 5) state toggled: " + toggleStateGPIOL1);
-                Console.WriteLine("GPIOL2 (Bit 6) state toggled: " + toggleStateGPIOL2);
-                Console.WriteLine("GPIOL3 (Bit 7) state toggled: " + toggleStateGPIOL3);
+                // Extract the states of GPIOL3 (bit 7), GPIOL2 (bit 6), GPIOL1 (bit 5), and GPIOL0 (bit 4) from the byte
+                bool pin7State = (readData[0] & 0b10000000) != 0;
+                bool pin6State = (readData[0] & 0b01000000) != 0;
+                bool pin5State = (readData[0] & 0b00100000) != 0;
+                bool pin4State = (readData[0] & 0b00010000) != 0;
 
-                Thread.Sleep(1000); // Toggle every 1 second
+                Console.WriteLine("GPIOL3 (Bit 7) state: " + pin7State);
+                Console.WriteLine("GPIOL2 (Bit 6) state: " + pin6State);
+                Console.WriteLine("GPIOL1 (Bit 5) state: " + pin5State);
+                Console.WriteLine("GPIOL0 (Bit 4) state: " + pin4State);
+
+                Thread.Sleep(1000); // Read every 1 second
             }
         }
         catch (Exception ex)
