@@ -123,6 +123,10 @@ class Program
         // Configure I2C communication parameters
         ftdi.SetBaudRate(100000); // Set the I2C clock rate (100 kHz in this example)
 
+
+        // Send the I2C device address with the write bit (0)
+        byte deviceAddress = 0x01; // Replace with your desired device address
+        ftdi.Write(new byte[] { (byte)(deviceAddress << 1) }, 1);
         // Start I2C communication here. You can use the MPSSE commands to send I2C data.
 
         // Don't forget to close the FTDI device when you're done.
